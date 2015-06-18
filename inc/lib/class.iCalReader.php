@@ -56,13 +56,30 @@ class ICal
             return false;
         }
         
-        $lines = file($filename, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+        $readLines = file($filename, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+        
+        // Collate multilines
+        $lines = array();
+        $wholeLine = "";
+        foreach( $readLines as $line ) {
+        	$line = trim($line);
+        	if( substr($line, -1) == "\\" ) {
+        		// Ends with slash? Next line should be collated to this one
+        		$wholeLine = $wholeLine . substr($line, 0, -1);
+        	}
+        	else {
+        		$lines[] = $wholeLine . $line;
+        		$wholeLine = "";
+        	}
+        }
+        if( strlen($wholeLine) > 0 )
+        	$lines[] = $wholeLine;
+        
+        // Parse calendar
         if (stristr($lines[0], 'BEGIN:VCALENDAR') === false) {
             return false;
         } else {
-            // TODO: Fix multiline-description problem (see http://tools.ietf.org/html/rfc2445#section-4.8.1.5)
             foreach ($lines as $line) {
-                $line = trim($line);
                 $add  = $this->keyValueFromString($line);
                 if ($add === false) {
                     $this->addCalendarComponentWithKeyAndValue($type, false, $line);
