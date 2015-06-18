@@ -24,7 +24,7 @@ interface iApiFunction
  * Returns a connection to mysql
  */
 function getMysqli() {
-  $oMysqli = new mysqli(CONFIG_DB_HOSTNAME, CONFIG_DB_USERNAME, CONFIG_DB_PASSWORD, CONFIG_DB_DATABASE);
+  $oMysqli = new mysqli(CONFIG_DB_HOSTNAME, CONFIG_DB_USERNAME, CONFIG_DB_PASSWORD, CONFIG_DB_DATABASE, $port = CONFIG_DB_PORT );
   if (mysqli_connect_errno()) {
     die('{"status": "failed", "error": "'  . addslashes(mysqli_error()) . '"}');
   }
